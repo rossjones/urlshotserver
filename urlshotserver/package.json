@@ -7,6 +7,7 @@
     "phantom": "0.3.3",
     "imagemagick": "0.1.2"
   },
+  "main": "server.js",
   "bugs":"https://github.com/rossjones/urlshotserver/issues",
   "engines": {
     "node": ">=v0.6.13"

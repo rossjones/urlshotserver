@@ -8,9 +8,9 @@ Also follows the [Gut guidelines](https://github.com/maxogden/gut "GUT") so that
 Requires
 --------
 
-Requires [PhantomJS](http://www.phantomjs.org/ "PhantomJS") to be installed
+ * Requires [PhantomJS](http://www.phantomjs.org/ "PhantomJS") to be installed
+ * Requires imagemagick
 
-  
 Configuration
 -------------
 
