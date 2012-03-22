@@ -17,28 +17,61 @@
 *****************************************************************************/
 
 var http = require("http");
+var url  = require('url');
+var fs = require("fs");
+var temp = require('temp');
+var phantom = require("phantom");
 var im = require('imagemagick');
 
 http.createServer(function(request, response) {
 
-  // Read the URL from the POST body, it is a POST. Isn't it? We might accept
-  // GET with params for now, for testing.
+    // Read the URL from the POST body, it is a POST. Isn't it? We might accept
+    // GET with params for now, for testing.
+    var url_parts = url.parse(request.url, true);
+    var query = url_parts.query;
+    var target_url = query['url'];
+    if ( !target_url ) {
+        response.writeHead(400, "text/plain")
+        response.end("No URL specified")
+        return;
+    }
 
-
-  // Check whether we have a callback and if so we can just accept the
-  // request and promise, well almost promise, a callback.
-  var callback_url = request.headers['X-Callback'];
-  if ( callback_url ) {
-      response.writeHead(200, "text/plain")
-      response.end("OK - will callback")
-  }
+    // Check whether we have a callback and if so we can just accept the
+    // request and promise, well almost promise, a callback.
+    var callback_url = request.headers['X-Callback'];
+    if ( callback_url ) {
+        response.writeHead(200, "text/plain")
+        response.end("OK - will callback")
+    }
 
   // Fetch and process the image
+  phantom.create( function(ph){
+      ph.createPage(function(page){
+          page.open( target_url, function(status){
+              if (status == "fail") {
+                  if ( ! callback_url ) {
+                      response.writeHead(400, "text/plain");
+                      response.end("Could not connect to " + target_url);
+                  }
+              } else {
+                  // Generate image
+                  tmpfile = temp.path({suffix: '.png'});
+                  console.log(tmpfile);
+                  page.render( tmpfile, function(){
+                      if ( ! callback_url ) {
+                          var fileStream = fs.createReadStream(tmpfile);
+                          response.writeHead(200, {'Content-Type':"image/png"});
+                          fileStream.pipe(response);
+                      }
 
-  if ( ! callback_url ) {
-      response.writeHead(200, "image/png")
-      response.end("Here is your image")
-  }
+                      page.release();
+                      ph.exit();
+                  });
+              }
+          });
+      });
+  });
+
 
 }).listen(8888);
 

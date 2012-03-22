@@ -5,7 +5,8 @@
   "author":  "Ross Jones (http://github.com/rossjones/)",
   "dependencies": {
     "phantom": "0.3.3",
-    "imagemagick": "0.1.2"
+    "imagemagick": "0.1.2",
+    "temp": "0.4.0"
   },
   "main": "server.js",
   "bugs":"https://github.com/rossjones/urlshotserver/issues",
